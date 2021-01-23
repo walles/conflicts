@@ -2,51 +2,40 @@
 
 set -euo pipefail
 
-WORKDIR=/tmp/difftest
-rm -rf $WORKDIR
-mkdir -p $WORKDIR
+if [ -z "${1+x}" ] || [ -e "$1" ] ; then
+    echo 'ERROR: Syntax: make-rebase-conflict.sh <destination>'
+    echo
+    echo 'Directory destination will be created, and must not exist when invoking this script.'
+    exit 1
+fi
 
-cd $WORKDIR
-git init
+WORKDIR="$1"
+rm -rf "$WORKDIR"
+mkdir -p "$WORKDIR"
 
-cat > names.txt << EOF
-Adam
-David
-EOF
-git add names.txt
-git commit -m 'Initial commit'
+cd "$WORKDIR"
 
-cat > names.txt << EOF
-Adam
-Bertil
-David
-EOF
-git add names.txt
-git commit -m 'Add Bertil'
+# Create initial commit
+git init -b main
+echo "Initial change" > file.txt
+git add file.txt
+git commit -m "Initial commit"
 
-#git checkout HEAD^^
-git checkout HEAD^
-git checkout -b caesar-branch
+# Make another branch with a branch specific change in it
+git checkout -b branch
+echo "Branch change" >> file.txt
+git commit -a -m "Branch change"
 
-date >> unrelated1.txt
-git add unrelated1.txt
-git commit -m "first unrelated change on caesar-branch"
+# Make another change in main branch
+git checkout main
+echo "Main change" >> file.txt
+git commit -a -m "Main change"
 
-cat > names.txt << EOF
-Adam
-Caesar
-David
-EOF
-git add names.txt
-git commit -m 'Add Caesar'
+# Create rebase conflict
+git checkout branch
+# The && exit 1 is because we require this to fail, otherwise we didn't get
+# ourselves a rebase conflict.
+git rebase main && exit 1
 
-date >> unrelated2.txt
-git add unrelated2.txt
-git commit -m "second unrelated change on caesar-branch"
-
-git rebase master || true
-
-MYSHA=$(cat "$(git rev-parse --show-toplevel)"/.git/rebase-apply/original-commit)
-git show "$MYSHA" > /tmp/mydiff.txt
-
-watch --errexit "git diff HEAD > /tmp/currentdiff.txt && (diff -y /tmp/mydiff.txt /tmp/currentdiff.txt || true)"
+echo
+echo "SUCCESS: Rebase conflict created in $WORKDIR"
