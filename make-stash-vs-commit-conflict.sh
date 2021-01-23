@@ -23,7 +23,7 @@ git commit -m "Initial commit"
 
 # Stash a change
 git checkout -b branch
-echo "Stashed change" >> file.txt
+echo "My change" >> file.txt
 git stash
 
 # Make another change in main branch

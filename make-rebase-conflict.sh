@@ -23,8 +23,8 @@ git commit -m "Initial commit"
 
 # Make another branch with a branch specific change in it
 git checkout -b branch
-echo "Branch change" >> file.txt
-git commit -a -m "Branch change"
+echo "My change" >> file.txt
+git commit -a -m "My change"
 
 # Make another change in main branch
 git checkout main
