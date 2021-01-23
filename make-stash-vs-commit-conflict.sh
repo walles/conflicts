@@ -21,21 +21,18 @@ echo "Initial change" > file.txt
 git add file.txt
 git commit -m "Initial commit"
 
-# Make another branch with a branch specific change in it
+# Stash a change
 git checkout -b branch
-echo "Branch change" >> file.txt
-git commit -a -m "Branch change"
+echo "Stashed change" >> file.txt
+git stash
 
 # Make another change in main branch
-git checkout main
-echo "Main change" >> file.txt
-git commit -a -m "Main change"
+echo "Committed change" >> file.txt
+git commit -a -m "Committed change"
 
-# Create merge conflict
-git checkout branch
-# The && exit 1 is because we require this to fail, otherwise we didn't get
-# ourselves the conflict we are after.
-git merge --no-ff main && exit 1
+# Create stash conflict. The && exit 1 is because we require this to fail,
+# otherwise we didn't get ourselves the conflict we are after.
+git stash pop && exit 1
 
 echo
-echo "SUCCESS: Merge conflict created in $WORKDIR"
+echo "SUCCESS: Stash-vs-commit conflict created in $WORKDIR"

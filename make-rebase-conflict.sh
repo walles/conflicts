@@ -3,7 +3,7 @@
 set -euo pipefail
 
 if [ -z "${1+x}" ] || [ -e "$1" ] ; then
-    echo 'ERROR: Syntax: make-rebase-conflict.sh <destination>'
+    echo "ERROR: Syntax: $0 <destination>"
     echo
     echo 'Directory destination will be created, and must not exist when invoking this script.'
     exit 1
