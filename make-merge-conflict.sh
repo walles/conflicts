@@ -3,7 +3,7 @@
 set -euo pipefail
 
 if [ -z "${1+x}" ] || [ -e "$1" ] ; then
-    echo 'ERROR: Syntax: make-rebase-conflict.sh <destination>'
+    echo 'ERROR: Syntax: make-merge-conflict.sh <destination>'
     echo
     echo 'Directory destination will be created, and must not exist when invoking this script.'
     exit 1
@@ -31,11 +31,11 @@ git checkout main
 echo "Main change" >> file.txt
 git commit -a -m "Main change"
 
-# Create rebase conflict
+# Create merge conflict
 git checkout branch
 # The && exit 1 is because we require this to fail, otherwise we didn't get
 # ourselves the conflict we are after.
-git rebase main && exit 1
+git merge --no-ff main && exit 1
 
 echo
-echo "SUCCESS: Rebase conflict created in $WORKDIR"
+echo "SUCCESS: Merge conflict created in $WORKDIR"
