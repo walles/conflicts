@@ -15,8 +15,9 @@ test-conflict() {
     ./show-my-original-change.sh "$WORKDIR" | grep "NO: " > /dev/null && exit 1
     rm -rf "$WORKDIR"
     echo "============ Testing a $TYPE conflict: PASS"
+    echo
 }
 
-test-conflict rebase
-test-conflict merge
-test-conflict stash-vs-commit
+for TYPE in $(find conflict-makers -type f|sed 's/.*make-//'|sed 's/-conflict.sh//'|sort) ; do
+    test-conflict "$TYPE"
+done
