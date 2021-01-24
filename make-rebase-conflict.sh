@@ -15,21 +15,24 @@ mkdir -p "$WORKDIR"
 
 cd "$WORKDIR"
 
+# YES means that the text should be shown by show-my-original-change.sh, NO
+# means that it should not.
+
 # Create initial commit
 git init -b main
 echo "Initial change" > file.txt
 git add file.txt
-git commit -m "Initial commit"
+git commit -m "NO: Initial commit"
 
 # Make another branch with a branch specific change in it
 git checkout -b branch
-echo "My change" >> file.txt
-git commit -a -m "My change"
+echo "YES: My change" >> file.txt
+git commit -a -m "YES: My change"
 
 # Make another change in main branch
 git checkout main
-echo "Main change" >> file.txt
-git commit -a -m "Main change"
+echo "NO: Main change" >> file.txt
+git commit -a -m "NO: Main change"
 
 # Create rebase conflict
 git checkout branch
