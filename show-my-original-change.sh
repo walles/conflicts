@@ -17,16 +17,20 @@ if ! git status --porcelain=2 | grep -Eq '^u ' ; then
     exit 1
 fi
 
-if [ -f ".git/REBASE_HEAD" ] ; then
-    git show "$(cat .git/REBASE_HEAD)"
-    exit
-fi
+for CONFLICTING in $(git status --porcelain=2|grep -E '^u '|cut -d' ' -f11-) ; do
+    BASE_FILE="$(mktemp)"
+    # Source for the :1: and :3: syntax: https://stackoverflow.com/a/44754855/473672
+    git show ":1:$CONFLICTING" > "$BASE_FILE"
 
-if [ -f ".git/MERGE_HEAD" ] ; then
-    git show "$(cat .git/MERGE_HEAD)"
-    exit
-fi
+    MY_FILE="$(mktemp)"
+    git show ":3:$CONFLICTING" > "$MY_FILE"
 
-# We have a conflict, but it's neither a merge nor a rebase one, take our
-# chances on "git stash pop".
-git stash show -p
+    # "exit 1" if there was no difference, that wouldn't make any sense
+    DIFF_FILE="$(mktemp)"
+    diff -pub "$BASE_FILE" "$MY_FILE" > "$DIFF_FILE" && exit 1
+
+    # Have the diff filenames match the repo ones
+    < "$DIFF_FILE" sed "s@$BASE_FILE@$CONFLICTING@" | sed "s@$MY_FILE@$CONFLICTING@"
+
+    rm "$BASE_FILE" "$MY_FILE" "$DIFF_FILE"
+done
