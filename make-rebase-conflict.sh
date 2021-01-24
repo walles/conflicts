@@ -24,10 +24,19 @@ echo "Initial change" > file.txt
 git add file.txt
 git commit -m "NO: Initial commit"
 
-# Make another branch with a branch specific change in it
+# Make another branch with branch specific changes in it
 git checkout -b branch
-echo "YES: My change" >> file.txt
-git commit -a -m "YES: My change"
+
+echo "hej" > somefile.txt
+git add somefile.txt
+git commit -m "NO: Unrelated"
+
+echo "YES: My conflicting change" >> file.txt
+git commit -a -m "YES: My conflicting change"
+
+echo "nej" > someotherfile.txt
+git add someotherfile.txt
+git commit -m "NO: Unrelated2"
 
 # Make another change in main branch
 git checkout main
