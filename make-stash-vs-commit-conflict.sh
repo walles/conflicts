@@ -34,5 +34,4 @@ git commit -a -m "Committed change"
 # otherwise we didn't get ourselves the conflict we are after.
 git stash pop && exit 1
 
-echo
-echo "SUCCESS: Stash-vs-commit conflict created in $WORKDIR"
+echo "OK: Stash-vs-commit conflict created in $WORKDIR"

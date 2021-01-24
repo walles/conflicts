@@ -8,6 +8,7 @@ rmdir "$WORKDIR"
 ./make-rebase-conflict.sh "$WORKDIR"
 ./show-my-original-change.sh "$WORKDIR" | grep "My change" > /dev/null
 rm -rf "$WORKDIR"
+echo "== PASS: Testing a rebase conflict"
 
 echo
 echo
@@ -17,6 +18,7 @@ rmdir "$WORKDIR"
 ./make-merge-conflict.sh "$WORKDIR"
 ./show-my-original-change.sh "$WORKDIR" | grep "My change" > /dev/null
 rm -rf "$WORKDIR"
+echo "== PASS: Testing a merge conflict"
 
 echo
 echo
@@ -26,3 +28,4 @@ rmdir "$WORKDIR"
 ./make-stash-vs-commit-conflict.sh "$WORKDIR"
 ./show-my-original-change.sh "$WORKDIR" | grep "My change" > /dev/null
 rm -rf "$WORKDIR"
+echo "== PASS: Testing a stash conflict"

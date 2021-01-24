@@ -37,5 +37,4 @@ git checkout branch
 # ourselves the conflict we are after.
 git rebase main && exit 1
 
-echo
-echo "SUCCESS: Rebase conflict created in $WORKDIR"
+echo "OK: Rebase conflict created in $WORKDIR"

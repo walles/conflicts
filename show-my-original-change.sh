@@ -16,7 +16,10 @@ if [ -f ".git/REBASE_HEAD" ] ; then
     exit
 fi
 
-# FIXME: Add support for merge conflicts
+if [ -f ".git/MERGE_HEAD" ] ; then
+    git show "$(cat .git/MERGE_HEAD)"
+    exit
+fi
 
 # FIXME: Add support for stash-vs-commit conflicts
 

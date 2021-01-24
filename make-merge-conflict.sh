@@ -31,11 +31,8 @@ git checkout main
 echo "Main change" >> file.txt
 git commit -a -m "Main change"
 
-# Create merge conflict
-git checkout branch
-# The && exit 1 is because we require this to fail, otherwise we didn't get
-# ourselves the conflict we are after.
-git merge --no-ff main && exit 1
+# Create merge conflict. The && exit 1 is because we require this to fail,
+# otherwise we didn't get ourselves the conflict we are after.
+git merge --no-ff branch && exit 1
 
-echo
-echo "SUCCESS: Merge conflict created in $WORKDIR"
+echo "OK: Merge conflict created in $WORKDIR"
