@@ -2,30 +2,21 @@
 
 set -euo pipefail
 
-echo "============ Testing a rebase conflict"
-WORKDIR="$(mktemp -d)"
-rmdir "$WORKDIR"
-./make-rebase-conflict.sh "$WORKDIR"
-./show-my-original-change.sh "$WORKDIR" | grep "My change" > /dev/null
-rm -rf "$WORKDIR"
-echo "== PASS: Testing a rebase conflict"
+test-conflict() {
+    TYPE="$1"
 
-echo
-echo
-echo "============ Testing a merge conflict"
-WORKDIR="$(mktemp -d)"
-rmdir "$WORKDIR"
-./make-merge-conflict.sh "$WORKDIR"
-./show-my-original-change.sh "$WORKDIR" | grep "My change" > /dev/null
-rm -rf "$WORKDIR"
-echo "== PASS: Testing a merge conflict"
+    echo "============ Setting up a $TYPE conflict"
+    WORKDIR="$(mktemp -d)"
+    rmdir "$WORKDIR"
+    ./make-"$TYPE"-conflict.sh "$WORKDIR" >& /dev/null
+    echo "============ Testing a $TYPE conflict"
+    ./show-my-original-change.sh "$WORKDIR" | cat
+    ./show-my-original-change.sh "$WORKDIR" | grep "YES: " > /dev/null
+    ./show-my-original-change.sh "$WORKDIR" | grep "NO: " > /dev/null && exit 1
+    rm -rf "$WORKDIR"
+    echo "============ Testing a $TYPE conflict: PASS"
+}
 
-echo
-echo
-echo "============ Testing a stash conflict"
-WORKDIR="$(mktemp -d)"
-rmdir "$WORKDIR"
-./make-stash-vs-commit-conflict.sh "$WORKDIR"
-./show-my-original-change.sh "$WORKDIR" | grep "My change" > /dev/null
-rm -rf "$WORKDIR"
-echo "== PASS: Testing a stash conflict"
+test-conflict rebase
+test-conflict merge
+test-conflict stash-vs-commit
