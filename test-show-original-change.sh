@@ -8,7 +8,7 @@ test-conflict() {
     echo "============ Setting up a $TYPE conflict"
     WORKDIR="$(mktemp -d)"
     rmdir "$WORKDIR"
-    ./make-"$TYPE"-conflict.sh "$WORKDIR" >& /dev/null
+    ./conflict-makers/make-"$TYPE"-conflict.sh "$WORKDIR" >& /dev/null
     echo "============ Testing a $TYPE conflict"
     ./show-my-original-change.sh "$WORKDIR" | cat
     ./show-my-original-change.sh "$WORKDIR" | grep "YES: " > /dev/null
