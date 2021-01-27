@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 
-"""
-create-conflict.py cherrypick edit-delete /tmp/apa
-"""
-
 import os
 import sys
 import shutil
+import pathlib
 import tempfile
 import subprocess
 
 
+RED = "\x1b[31m"
 GREEN = "\x1b[32m"
 PURPLE = "\x1b[35m"
 BOLDWHITE = "\x1b[1;97m"
@@ -18,14 +16,20 @@ YELLOW = "\x1b[93m"
 GREY = "\x1b[37m"
 NORMAL = "\x1b[m"
 
+SHOW_ORIGINAL_CHANGE = str(pathlib.Path(__file__).parent / "show-original-change.sh")
 
-def git(*args: str):
+
+def get_prompt():
     branch = (
         subprocess.run(["git", "branch", "--show-current"], capture_output=True)
         .stdout.decode()
         .strip()
     )
-    print(f"\n({PURPLE}{branch}{NORMAL}) $ {BOLDWHITE}git{NORMAL}{GREY}", end="")
+    return f"\n({PURPLE}{branch}{NORMAL}) $ "
+
+
+def git(*args: str):
+    print(f"\n{get_prompt()}{BOLDWHITE}git{NORMAL}{GREY}", end="")
     for arg in args:
         if " " in arg:
             print(f' {YELLOW}"{arg}"{GREY}', end="")
@@ -137,7 +141,18 @@ for conflict_type in ("edit-edit", "edit-delete", "delete-edit", "add-add"):
     for conflict_operation in ("merge", "cherrypick", "rebase", "stash"):
         conflict_dir = create_conflict(conflict_operation, conflict_type)
 
-        # FIXME: Verify show-original-change.sh can show the original change in
+        # Verify show-original-change.sh can show the original change in
         # conflict_dir
+        os.chdir(conflict_dir)
+        print(f"{get_prompt()}{SHOW_ORIGINAL_CHANGE} {conflict_dir}")
+        result = subprocess.run(
+            [SHOW_ORIGINAL_CHANGE, conflict_dir], capture_output=True
+        )
+
+        if result.returncode != 0:
+            sys.exit(f"{RED}{result.stderr.decode()}{NORMAL}")
+        print(result.stdout)
+        assert b"YES: " in result.stdout
+        assert b"NO: " not in result.stdout
 
         shutil.rmtree(conflict_dir)
